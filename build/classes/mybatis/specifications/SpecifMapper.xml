@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SpecifMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		xx_product_specification_group
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		TPSG_ADD_DATE,	
+		TPSG_MODIFY_DATE,	
+		TPSG_NAME,	
+		TPSG_TYPE,	
+		TPSG_PRODUCT_CATEGORY_ID,	
+		SPECIF_ID
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{TPSG_ADD_DATE},	
+		#{TPSG_MODIFY_DATE},	
+		#{TPSG_NAME},	
+		#{TPSG_TYPE},	
+		#{TPSG_PRODUCT_CATEGORY_ID},	
+		#{SPECIF_ID}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+		(
+	<include refid="Field"></include>
+		) values (
+	<include refid="FieldValue"></include>
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			TPSG_ID = #{TPSG_ID}
+	</delete>
+	
+	<!-- 删除规则值 -->
+	<delete id="deleteValue" parameterType="pd">
+		delete from
+		xx_product_specification_value
+		where 
+			tpsv_specification_group_id = #{TPSG_ID}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			TPSG_NAME = #{TPSG_NAME},
+			TPSG_TYPE = #{TPSG_TYPE},
+			TPSG_SORT = #{TPSG_SORT},
+			TPSG_PRODUCT_CATEGORY_ID = #{TPSG_PRODUCT_CATEGORY_ID},
+		TPSG_MODIFY_DATE = #{TPSG_MODIFY_DATE}
+		where 
+		TPSG_ID = #{TPSG_ID}
+	</update>
+	
+		<update id="edit1" parameterType="pd">
+		update
+		xx_product_specification_value
+		set 
+			TPSV_SORT = #{TPSV_SORT},
+			TPSV_NAME = #{TPSV_NAME},
+		    TPSV_MODIFY_DATE = #{TPSV_MODIFY_DATE}
+		   
+		   where 
+		TPSV_ID = #{TPSV_ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+		TPSG_ID,
+		TPSG_NAME,
+		TPSG_SORT,
+		TPSG_TYPE,
+		TPSG_PRODUCT_CATEGORY_ID
+		
+		from 
+	    xx_product_specification_group
+		
+		where 
+			tpsg_id = #{TPSG_ID}
+	</select>
+	
+		<select id="find1ById" parameterType="pd" resultType="pd">
+		select 
+		TPSV_ID,
+		TPSV_NAME,
+		TPSV_SORT,
+		TPSV_IMAGE
+		from 
+		xx_product_specification_value
+		where 
+			TPSV_SPECIFICATION_GROUP_ID = #{TPSG_ID}
+	   </select>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+	SELECT TPSG_ID ,
+	TPSG_ADD_DATE,
+	TPSG_MODIFY_DATE,
+	TPSG_NAME,
+	x.TPSG_TYPE as TPSG_TYPE,
+	c.tpc_name as TPC_NAME,
+	(select group_concat(v.tpsv_name) from xx_product_specification_value v WHERE
+	v.tpsv_specification_group_id = x.tpsg_id group by
+	v.tpsv_specification_group_id ) SPECIFICATIONNAME
+	FROM xx_product_specification_group x LEFT JOIN xx_product_category c ON
+	x.tpsg_product_category_id = c.tpc_id WHERE 1 = 1 
+		
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+				
+				x.TPSG_TYPE LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					 or 
+					c.tpc_name LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+				<!--	根据需求自己加检索条件
+					x.TPSG_TYPE LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					 or 
+					c.tpc_name LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+				-->
+				)
+		</if>
+		order by TPSG_MODIFY_DATE desc
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			SPECIF_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	<!-- 
+		<insert id="save" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+		(
+	<include refid="Field"></include>
+		) values (
+	<include refid="FieldValue"></include>
+		)
+	</insert>
+	 -->
+	
+	<insert id="savespeci" parameterType="com.fh.entity.freight.specificationsVO" useGeneratedKeys="true"  keyProperty="TPSG_ID" keyColumn="TPSG_ID">
+ 
+ 
+    <selectKey keyProperty="TPSG_ID" order="AFTER" resultType="java.lang.Integer">
+            select LAST_INSERT_ID() as TPSG_ID
+        </selectKey>
+ 
+ 
+    insert into xx_product_specification_group(TPSG_ADD_DATE,
+    TPSG_MODIFY_DATE,
+    TPSG_SORT,
+    TPSG_NAME,
+    TPSG_TYPE,
+    tpsg_product_category_id
+    ) 
+    values(
+    
+    #{TPSG_ADD_DATE},
+    #{TPSG_MODIFY_DATE},
+    #{TPSG_SORT},
+    #{TPSG_NAME},
+    #{TPSG_TYPE},
+    #{TPSG_PRODUCT_CATEGORY_ID}
+    )
+</insert>
+
+
+	<insert id="saveValue" parameterType="pd">
+		insert into 
+	  XX_PRODUCT_SPECIFICATION_VALUE
+	    (
+	TPSV_ADD_DATE,
+	TPSV_MODIFY_DATE,
+	TPSV_SORT,
+	
+	TPSV_NAME,
+	TPSV_SPECIFICATION_GROUP_ID
+		) values (
+	#{TPSV_ADD_DATE},
+	#{TPSV_MODIFY_DATE},
+	#{TPSV_SORT},
+	
+	#{TPSV_NAME},
+	#{TPSV_SPECIFICATION_GROUP_ID}
+		)
+	</insert>
+	
+</mapper>

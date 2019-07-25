@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="DetailsMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		tb_information
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+	    TM_ID,
+		TM_NAME,	
+		TM_TYPE,	
+		TM_LEVEL_ID ,	
+		TM_NICKNAME,	
+		TM_USERNAME,	
+		TM_ADDRESS,	
+		TM_MOBILE,	
+		TM_ADD_DATE,	
+		TM_SCORE,	
+		TM_STATUS,	
+		TM_YAOQING,	
+		TM_YONGJIN,	
+		TM_IS_YONGJIN,	
+		TM_SIGN_CONTINUITY_COUNT,	
+		TM_SIGN_LAST_DATE,	
+		TM_SIGN_ALL_COUNT,	
+		TM_IS_SET
+		
+	</sql>
+	
+	
+		<sql id="Fields">
+		a.TM_ID,
+		TM_NAME,	
+		TM_TYPE,	
+		c.NAME AS TM_LEVEL_ID ,	
+		TM_NICKNAME,	
+		TM_USERNAME,	
+		TM_ADDRESS,	
+		TM_MOBILE,	
+		TM_ADD_DATE,	
+		TM_SCORE,	
+		TM_STATUS,	
+		TM_YAOQING,	
+		TM_YONGJIN,	
+		TM_IS_YONGJIN,	
+		TM_SIGN_CONTINUITY_COUNT,	
+		TM_SIGN_LAST_DATE,	
+		TM_SIGN_ALL_COUNT,	
+		TM_IS_SET
+		
+	</sql>
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{TM_NAME},	
+		#{TM_TYPE},	
+		#{TM_LEVEL_ID},	
+		#{TM_NICKNAME},	
+		#{TM_USERNAME},	
+		#{TM_ADDRESS},	
+		#{TM_MOBILE},	
+		#{TM_ADD_DATE},	
+		#{TM_SCORE},	
+		#{TM_STATUS},	
+		#{TM_YAOQING},	
+		#{TM_YONGJIN},	
+		#{TM_IS_YONGJIN},	
+		#{TM_SIGN_CONTINUITY_COUNT},	
+		#{TM_SIGN_LAST_DATE},	
+		#{TM_SIGN_ALL_COUNT},	
+		#{TM_IS_SET},	
+		#{USERINFO_ID}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into 
+      	
+	<include refid="tableName"></include>
+		(
+	    TI_CATA_ID,
+        TI_TITLE,
+        TI_CONTENT,
+        TI_VIEW_COUNT,
+        TI_ADD_DATE,
+        TI_STATUS
+        
+		) values (
+        #{TI_CATA_ID},
+        #{TI_TITLE},
+        #{TI_CONTENT},
+        #{TI_VIEW_COUNT},
+        #{TI_ADD_DATE},
+        #{TI_STATUS}
+     
+        
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			ti_id = #{TI_ID}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+		TI_TITLE = #{TI_TITLE},
+		TI_CONTENT=#{TI_CONTENT}
+		where 
+		ti_id = #{TI_ID}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+		TI_ID,	
+		TI_TITLE,
+		TI_CONTENT,
+		TI_ICON
+		from 
+		<include refid="tableName"></include>
+		where 
+			TI_ID = #{TI_ID}
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+	
+	select a.ti_title as TI_TITLE,
+	  a.ti_id as TI_ID ,
+	  a.ti_icon  as TI_ICON,
+	  a.ti_add_date as TI_ADD_DATE,
+	  a.ti_content as TI_CONTENT,
+	  b.tic_name as  TIC_NAME
+	    from  
+	tb_information a, tb_information_cata b WHERE b.tic_id=a.ti_cata_id
+
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+				
+					a.ti_title LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					 or 
+					a.ti_title LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+			<!--	根据需求自己加检索条件	-->
+				)
+		</if>
+		
+		
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			USERINFO_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	
+		<!--通过ID获取其子一级菜单 -->
+	<select id="listCarUserByParentId" parameterType="String" resultType="Menu">
+	
+	SELECT tm_id as TM_ID,
+	 tm_name as TM_NAME,
+	 tm_yongjin as TM_YONGJIN,
+	 tm_is_yongjin as TM_IS_YONGJIN,
+	 tm_yaoqing as TM_YAOQING,
+	 tm_nickname as TM_NICKNAME from tb_member
+	  where tm_yaoqing = #{parentId} order by  TM_ID
+	</select>
+	
+	<!--通过菜单ID获取数据 -->
+	<select id="getCarUserById" parameterType="pd" resultType="pd">
+	SELECT tm_id as TM_ID,
+	 tm_name as TM_NAME,
+	 tm_yongjin as TM_YONGJIN,
+	 tm_is_yongjin as TM_IS_YONGJIN,
+	 tm_yaoqing as TM_YAOQING,
+	 tm_nickname as TM_NICKNAME from tb_member
+		 where tm_id=#{TM_ID}
+	</select>
+	
+		<select id="getcountById"  resultType="pd">
+	        select  tm_id as TM_ID,
+	               tm_name as TM_NAME,
+	                 tm_yongjin as TM_YONGJIN from tb_member WHERE tm_yaoqing=#{0}
+	    </select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage1" parameterType="page" resultType="pd">
+       select
+		<include refid="Fields"></include>
+		from 
+		<include refid="tableName"></include>
+		a left join TB_MEMBER_LEVEL b  on a.tm_level_id=b.tml_id  left join sys_dictionaries c on c.BIANMA=b.tml_level
+		
+		where 1=1 
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+				
+					a.TM_NAME LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					 or 
+					a.TM_NICKNAME LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+			<!--	根据需求自己加检索条件	-->
+				)
+		</if>
+		<if test="pd.TM_ID!= null and pd.TM_ID != ''">
+		    and
+				(
+				
+					a.tm_yaoqing=#{pd.TM_ID}
+					
+			<!--	根据需求自己加检索条件	-->
+				)
+				</if>
+	</select>
+	
+	
+	
+	<insert id="savere" parameterType="pd">
+		insert into 
+          tb_member_recommend
+		(
+		TMP_MEMBER_ID,
+	    TMP_SET_TOTAL_NUMBER,
+         TMP_SET_DIRECT_NUMBER,
+          TMP_SET_SMALL_NUMBER
+  
+		) values (
+		#{TMP_MEMBER_ID},
+		#{TML_TOTAL_NUMBER},
+		#{TML_DIRECT_NUMBER},
+		#{TML_SMALL_NUMBER}
+		)
+	</insert>
+	
+	
+		<!-- 修改图片 -->
+	<update id="editPictures" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+		ti_icon = #{TI_ICON}
+		where 
+		ti_id = #{TI_ID}
+	</update>
+	
+	
+</mapper>

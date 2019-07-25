@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="FreightTplMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		xx_freight_template
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		TFT_ADD_DATE,	
+		TFT_MODIFY_DATE,	
+		TFT_NAME,	
+		TFT_PROV_ID,	
+		TFT_CITY_ID,	
+		TFT_REGION_ID,	
+		
+	</sql>
+	
+		<sql id="Field1">
+		
+		TFT_NAME,	
+		TFT_PROV_ID,	
+		TFT_CITY_ID,	
+		TFT_REGION_ID,	
+		TFT_ID
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{TFT_ADD_DATE},	
+		#{TFT_MODIFY_DATE},	
+		#{TFT_NAME},	
+		#{TFT_PROV_ID},	
+		#{TFT_CITY_ID},	
+		#{TFT_REGION_ID},	
+		#{FREIGHTTPL_ID}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into 
+	    xx_freight_template
+		(
+	   TFT_ADD_DATE,	
+		TFT_MODIFY_DATE,	
+		TFT_NAME,	
+		TFT_PROV_ID,	
+		TFT_CITY_ID,	
+		TFT_REGION_ID
+		) values (
+	    #{TFT_ADD_DATE},	
+		#{TFT_MODIFY_DATE},	
+		#{TFT_NAME},	
+		#{TFT_PROV_ID},	
+		#{TFT_CITY_ID},	
+		#{TFT_REGION_ID}
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			TFT_ID = #{TFT_ID}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			TFT_NAME = #{TFT_NAME},
+			TFT_PROV_ID = #{TFT_PROV_ID},
+			TFT_CITY_ID = #{TFT_CITY_ID},
+			TFT_REGION_ID = #{TFT_REGION_ID}
+	
+		where 
+		TFT_ID = #{TFT_ID}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+	
+	select
+		a.tft_id as TFT_ID,
+		 a.tft_name as TFT_NAME,
+		 b.pname as PNAME,
+         b.pid    as  PID,
+		 c.cname as CNAME,
+         c.cid as CID,
+		 d.oname as ONAME,
+         d.oid  AS  OID,
+		 a.tft_add_date as TFT_ADD_DATE,
+		 a.tft_modify_date as TFT_MODIFY_DATE
+		from 
+		 xx_freight_template a,sys_province b, sys_city c, sys_county d
+		where 1=1 and a.tft_prov_id=b.pid AND  a.tft_city_id=c.cid and a.tft_region_id=d.oid
+		and  TFT_ID = #{TFT_ID}
+	
+	</select>
+	
+	<!-- 查询省 -->
+	
+		<select id="findProById" parameterType="pd" resultType="com.fh.entity.freight.freightVO">
+		select PID  , PNAME  from  sys_province 
+	    </select>
+	    
+	    <select id="findTabById" parameterType="pd" resultType="com.fh.entity.freight.freightVO">
+		select TFT_ID  , TFT_NAME  from  xx_freight_template 
+	    </select>
+	
+	   <select id="findCityoById" parameterType="pd" resultType="com.fh.entity.freight.freightVO">
+		select CID  , CNAME  from  sys_city where  PID=#{PID}
+	    </select>
+	
+	 <select id="findCountyById" parameterType="pd" resultType="com.fh.entity.freight.freightVO">
+		SELECT  OID ,ONAME from sys_county WHERE CID=#{CID}
+	    </select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+	
+		select
+		a.tft_id as TFT_ID,
+		a.tft_name as TFT_NAME,
+		 b.pname as PNAME, 
+		 c.cname as CNAME,
+		 d.oname as ONAME,
+		 a.tft_add_date as TFT_ADD_DATE,
+		 a.tft_modify_date as TFT_MODIFY_DATE
+		from 
+		 xx_freight_template a,sys_province b, sys_city c, sys_county d
+		where 1=1 and a.tft_prov_id=b.pid AND  a.tft_city_id=c.cid and a.tft_region_id=d.oid
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+				
+				a.TFT_NAME LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+				<!--	根据需求自己加检索条件
+					tft_name LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					 or 
+					字段2 LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+				-->
+				)
+		</if>
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			FREIGHTTPL_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WithdrawalDetailMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		WITHDRAWALDETAIL
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		TMWC_MEMBER_ID,	
+		TMWC_AMOUNT,	
+		TMWC_ADD_DATE,	
+		TMWC_DEAL_DATE,	
+		TMWC_STATUS,	
+		TMWC_MEMO,	
+		TMWC_UPDATE_DATE,	
+		TMWC_ACCOUNT_ID,	
+		TMWC_OPT_ID,	
+		TMWC_SERVICE_CHARGE,	
+		WITHDRAWALDETAIL_ID
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{TMWC_MEMBER_ID},	
+		#{TMWC_AMOUNT},	
+		#{TMWC_ADD_DATE},	
+		#{TMWC_DEAL_DATE},	
+		#{TMWC_STATUS},	
+		#{TMWC_MEMO},	
+		#{TMWC_UPDATE_DATE},	
+		#{TMWC_ACCOUNT_ID},	
+		#{TMWC_OPT_ID},	
+		#{TMWC_SERVICE_CHARGE},	
+		#{WITHDRAWALDETAIL_ID}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+		(
+	<include refid="Field"></include>
+		) values (
+	<include refid="FieldValue"></include>
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			WITHDRAWALDETAIL_ID = #{WITHDRAWALDETAIL_ID}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			TMWC_STATUS = #{TMWC_STATUS},
+			TMWC_MEMO = #{TMWC_MEMO},
+		WITHDRAWALDETAIL_ID = WITHDRAWALDETAIL_ID
+		where 
+		TMWC_ID = #{TMWC_ID}
+	</update>
+	
+		<!-- 已处理 -->
+	<update id="edit1" parameterType="pd">
+			update
+		tb_member_withdraw_cash
+		set 
+			TMWC_STATUS = #{TMWC_STATUS},
+			TMWC_DEAL_DATE = #{TMWC_DEAL_DATE},
+			TMWC_OPT_ID=#{TMWC_OPT_ID}
+		 where 
+		  TMWC_ID = #{TMWC_ID}
+	</update>
+	<!-- 已打款  已驳回 -->
+	<update id="edit2" parameterType="pd">
+			update
+		   tb_member_withdraw_cash
+		   set 
+			TMWC_STATUS = #{TMWC_STATUS},
+			TMWC_MEMO = #{TMWC_MEMO},
+			TMWC_OPT_ID=#{TMWC_OPT_ID},
+			TMWC_UPDATE_DATE=#{TMWC_UPDATE_DATE}
+		   where 
+		  TMWC_ID = #{TMWC_ID}
+	</update>
+	
+		<update id="edit4" parameterType="pd">
+			update
+		   tb_member_withdraw_cash
+		   set 
+			TMWC_STATUS = #{TMWC_STATUS},
+			TMWC_MEMO = #{TMWC_MEMO},
+			TMWC_OPT_ID=#{TMWC_OPT_ID},
+			TMWC_REJECT_DATE=#{TMWC_REJECT_DATE}
+		   where 
+		  TMWC_ID = #{TMWC_ID}
+	</update>
+	
+	
+	
+	<update id="edit3" parameterType="pd">
+			update
+		   tb_member
+		   set 
+			TM_YONGJIN = #{TM_YONGJIN},
+			TM_IS_YONGJIN = #{TM_IS_YONGJIN}
+			
+		   where 
+		  TM_ID = #{TMWC_MEMBER_ID}
+	</update>
+	
+	
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		SELECT TMWC_ID ,TMWC_AMOUNT, TMWC_STATUS ,TMWC_MEMBER_ID,TMWC_MEMO from tb_member_withdraw_cash 
+		where 
+			TMWC_ID = #{TMWC_ID}
+	</select>
+	
+		<select id="findAmountById" parameterType="pd" resultType="pd">
+		SELECT TM_YONGJIN ,TM_IS_YONGJIN  from tb_member
+		 where 
+			TM_ID = #{TMWC_MEMBER_ID}
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+
+	select
+	 b.tm_name as TM_NAME,
+	b.tm_nickname as TM_NICKNAME, 
+	a.tmwc_amount as TMWC_AMOUNT,
+	a.tmwc_add_date as TMWC_ADD_DATE,
+	a.tmwc_deal_date as TMWC_DEAL_DATE,
+    a.tmwc_status as TMWC_STATUS,
+	a.tmwc_memo as TMWC_MEMO,
+	a.tmwc_update_date as TMWC_UPDATE_DATE,
+	a.tmwc_reject_date as TMWC_REJECT_DATE,
+    a.tmwc_service_charge as TMWC_SERVICE_CHARGE,
+     a.tmwc_id  as TMWC_ID,
+	c.tmb_branch_name as TMB_BRANCH_NAME,
+	c.tmb_name as TMB_NAME,
+	c.tmb_card_num as TMB_CARD_NUM,
+	c.tmb_card as TMB_CARD,
+	a.tmwc_opt_id as TMWC_OPT_ID
+    from tb_member_withdraw_cash a,tb_member b, tb_member_bank c where
+	a.tmwc_member_id=b.tm_id and a.tmwc_account_id=c.tmb_id
+    
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+				    b.tm_name LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					or 
+					c.tmb_name LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+					or
+					b.tm_nickname LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					or
+					c.tmb_card_num LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+				<!--	根据需求自己加检索条件
+					b.tm_name LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					or 
+					c.tmb_name LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+					or
+					b.tm_nickname LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+				-->
+				)
+		</if>
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			WITHDRAWALDETAIL_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

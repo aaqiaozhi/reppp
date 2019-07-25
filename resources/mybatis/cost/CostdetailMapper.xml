@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CostdetailMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		xx_local_freight
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		TLF_FIRST_WEIGHT,	
+		TLF_CONTINUE_WEIGHT,	
+		TLF_FIRST_PRICE,	
+		TLF_CONTINUE_PRICE,	
+		TLF_PROV_ID,	
+		TLF_CITY_ID,	
+		TLF_REGION_ID,	
+		TLF_FREIGHT_TEMPLATE_ID,	
+		COSTDETAIL_ID
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{TLF_FIRST_WEIGHT},	
+		#{TLF_CONTINUE_WEIGHT},	
+		#{TLF_FIRST_PRICE},	
+		#{TLF_CONTINUE_PRICE},	
+		#{TLF_PROV_ID},	
+		#{TLF_CITY_ID},	
+		#{TLF_REGION_ID},	
+		#{TLF_FREIGHT_TEMPLATE_ID}
+	
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+		(
+	
+	 TLF_FIRST_WEIGHT,
+	 TLF_CONTINUE_WEIGHT,
+	 TLF_FIRST_PRICE,
+	 TLF_CONTINUE_PRICE,
+	 TLF_PROV_ID,
+	 TLF_FREIGHT_TEMPLATE_ID,
+	 TLF_ADD_DATE,
+	 TLF_MODIFY_DATE
+	   ) values (
+	    #{TLF_FIRST_WEIGHT},	
+		#{TLF_CONTINUE_WEIGHT},	
+		#{TLF_FIRST_PRICE},	
+		#{TLF_CONTINUE_PRICE},	
+		#{TFT_PROV_ID},	
+		#{TLF_FREIGHT_TEMPLATE_ID},	
+		#{TLF_ADD_DATE},	
+		#{TLF_MODIFY_DATE}
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			TLF_ID = #{TLF_ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			TLF_FIRST_WEIGHT = #{TLF_FIRST_WEIGHT},
+			TLF_CONTINUE_WEIGHT = #{TLF_CONTINUE_WEIGHT},
+			TLF_FIRST_PRICE = #{TLF_FIRST_PRICE},
+			TLF_CONTINUE_PRICE = #{TLF_CONTINUE_PRICE},
+			TLF_PROV_ID = #{TFT_PROV_ID},
+			TLF_FREIGHT_TEMPLATE_ID = #{TLF_FREIGHT_TEMPLATE_ID},
+		    TLF_MODIFY_DATE=#{TLF_MODIFY_DATE}
+		where 
+		TLF_ID = #{TLF_ID}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+	select
+	a.tlf_id as TLF_ID ,
+	a.tlf_first_weight as TLF_FIRST_WEIGHT,
+	a.tlf_continue_weight as  TLF_CONTINUE_WEIGHT,
+	a.tlf_first_price as  TLF_FIRST_PRICE,
+	a.tlf_continue_price as TLF_CONTINUE_PRICE,
+	b.pname as PNAME,
+	a.tlf_prov_id as TLF_PROV_ID,
+	e.tft_region_id as TFT_REGION_ID,
+	a.TLF_FREIGHT_TEMPLATE_ID as TLF_FREIGHT_TEMPLATE_ID 
+	from
+	xx_local_freight a,
+	sys_province b,
+	xx_freight_template e
+	where a.tlf_prov_id=b.pid
+	and a.tlf_freight_template_id=e.tft_id
+	and
+	 TLF_ID = #{TLF_ID}
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+	select
+	a.tlf_id as TLF_ID ,
+	a.tlf_first_weight as TLF_FIRST_WEIGHT,
+	a.tlf_continue_weight as  TLF_CONTINUE_WEIGHT,
+	a.tlf_first_price as  TLF_FIRST_PRICE,
+	a.tlf_continue_price as TLF_CONTINUE_PRICE,
+	(select c.cname from sys_city c where a.tlf_city_id=c.cid
+	)as CNAME,
+
+	(select d.ONAME from sys_county d where a.tlf_region_id=d.oid
+	)as ONAME,
+
+	b.pname as PNAME,
+	e.tft_name as TFT_NAME 
+	from
+	xx_local_freight a,
+	sys_province b,
+	xx_freight_template e
+	where a.tlf_prov_id=b.pid
+	and a.tlf_freight_template_id=e.tft_id
+	  ORDER  BY a.tlf_freight_template_id,a.TLF_MODIFY_DATE ASC
+		
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			COSTDETAIL_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

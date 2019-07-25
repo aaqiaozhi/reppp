@@ -1,0 +1,613 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ProductInfoMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		xx_product
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+	    TP_ID,
+		TP_SN,	
+		TP_ADD_DATE,	
+		TP_MODIFY_DATE,	
+		TP_MARKET_PRICE,	
+		TP_COST,	
+		TP_PRICE,	
+		TP_POINT,	
+		TP_NAME,	
+		TP_VICE_NAME,	
+		TP_IMAGE,	
+		TP_DESP,	
+		TP_IS_MARKETABLE,	
+		TP_IS_GIFT,	
+		TP_IS_DISTRIBUTION,	
+		TP_SALES,	
+		TP_STOCK,	
+		TP_UNIT,	
+		TP_WEIGHT,	
+		TP_FREIGHT_TEMPLATE_ID
+		
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{TP_SN},	
+		#{TP_ADD_DATE},	
+		#{TP_MODIFY_DATE},	
+		#{TP_MARKET_PRICE},	
+		#{TP_COST},	
+		#{TP_PRICE},	
+		#{TP_POINT},	
+		#{TP_NAME},	
+		#{TP_VICE_NAME},	
+		#{TP_IMAGE},	
+		#{TP_DESP},	
+		#{TP_IS_MARKETABLE},	
+		#{TP_IS_GIFT},	
+		#{TP_IS_DISTRIBUTION},	
+		#{TP_SALES},	
+		#{TP_STOCK},	
+		#{TP_UNIT},	
+		#{TP_WEIGHT},	
+		#{TP_FREIGHT_TEMPLATE_ID},	
+		#{PRODUCTINFO_ID}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+	(
+
+	TP_SN ,
+	TP_NAME ,
+	TP_VICE_NAME,
+	TP_ADD_DATE,
+	TP_MODIFY_DATE,
+	TP_MARKET_PRICE,
+	TP_COST,
+	TP_PRICE,
+	TP_POINT,
+	TP_IMAGE,
+	tp_is_list,
+	TP_IS_MARKETABLE,
+	tp_is_top,
+	TP_IS_GIFT,
+	TP_IS_DISTRIBUTION ,
+	TP_STOCK,
+	TP_UNIT,
+	TP_WEIGHT,
+	TP_FREIGHT_TEMPLATE_ID,
+	TP_PRODUCT_CATEGORY1_ID
+
+	) values (
+	#{TP_SN},
+	#{TP_NAME},
+	#{TP_VICE_NAME},
+	#{TP_ADD_DATE},
+	#{TP_MODIFY_DATE},
+	#{TP_MARKET_PRICE},
+	#{TP_COST},
+	#{TP_PRICE},
+	#{TP_POINT},
+	#{TP_IMAGE},
+	#{TP_IS_LIST},
+	#{TP_IS_MARKETABLE},
+	#{TP_IS_TOP},
+	#{TP_IS_GIFT},
+	#{TP_IS_DISTRIBUTION},
+	#{TP_STOCK},
+	#{TP_UNIT},
+	#{TP_WEIGHT},
+	#{TP_FREIGHT_TEMPLATE_ID},
+	#{TP_PRODUCT_CATEGORY1_ID}
+	
+	)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			TP_ID = #{TP_ID}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			TP_SN = #{TP_SN},
+			TP_NAME = #{TP_NAME},
+			TP_VICE_NAME = #{TP_VICE_NAME},
+			TP_MODIFY_DATE = #{TP_MODIFY_DATE},
+			TP_MARKET_PRICE = #{TP_MARKET_PRICE},
+			TP_COST = #{TP_COST},
+			TP_PRICE = #{TP_PRICE},
+			TP_POINT = #{TP_POINT},
+			TP_IMAGE=#{TP_IMAGE},
+			
+			TP_IS_MARKETABLE = #{TP_IS_MARKETABLE},
+			TP_IS_GIFT = #{TP_IS_GIFT},
+			TP_IS_DISTRIBUTION = #{TP_IS_DISTRIBUTION},
+			TP_STOCK = #{TP_STOCK},
+			TP_UNIT = #{TP_UNIT},
+			TP_WEIGHT = #{TP_WEIGHT},
+			TP_FREIGHT_TEMPLATE_ID = #{TP_FREIGHT_TEMPLATE_ID},
+		    TP_PRODUCT_CATEGORY1_ID=#{TP_PRODUCT_CATEGORY1_ID}
+		where 
+		TP_ID = #{TP_ID}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		 SELECT a.TP_ID,
+		a.TP_SN,		
+		a.TP_MARKET_PRICE,	
+		a.TP_COST,	
+		a.TP_PRICE,	
+		a.TP_POINT,	
+		a.TP_NAME,	
+		a.TP_VICE_NAME,	
+		a.TP_IMAGE,		
+		a.TP_IS_MARKETABLE,	
+		a.TP_IS_GIFT,	
+		a.TP_IS_DISTRIBUTION,	
+		a.TP_SALES,	
+		a.TP_STOCK,
+		a.TP_DESP,	
+		a.TP_UNIT,	
+		a.TP_WEIGHT,	
+		a.TP_FREIGHT_TEMPLATE_ID,
+		a.TP_PRODUCT_CATEGORY1_ID
+		FROM   xx_product a LEFT JOIN xx_freight_template b ON
+		 a.tp_freight_template_id=b.tft_id where 1=1 and
+			a.TP_ID = #{TP_ID}
+	</select>
+	
+	
+	
+		<update id="goEditproduct" parameterType="pd">
+		update
+		     xx_product
+		set 
+			TP_DESP = #{TP_DESP}
+		where 
+		TP_ID = #{TP_ID}
+	</update>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		 SELECT a.TP_ID,
+		 a.TP_SN,	
+		 a.TP_ADD_DATE,	
+		 a.TP_MODIFY_DATE,	
+		a.TP_MARKET_PRICE,	
+		a.TP_COST,	
+		a.TP_PRICE,	
+		a.TP_POINT,	
+		a.TP_NAME,	
+		a.TP_VICE_NAME,	
+		a.TP_IMAGE,		
+		a.TP_IS_MARKETABLE,	
+		a.TP_IS_GIFT,	
+		a.TP_IS_DISTRIBUTION,	
+		a.TP_SALES,	
+		a.TP_STOCK,	
+		a.TP_UNIT,	
+		a.TP_WEIGHT,	
+		b.tft_name,
+		c.tpc_name as TPC_NAME,
+		tp_product_category1_id as TP_PRODUCT_CATEGORY1_ID
+		FROM   xx_product a LEFT JOIN xx_freight_template b ON
+		 a.tp_freight_template_id=b.tft_id
+		 
+		 LEFT JOIN  xx_product_category  c on a.tp_product_category1_id=c.tpc_id
+		  where 1=1
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+				
+				TP_NAME LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+				<!--	根据需求自己加检索条件
+					字段1 LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					 or 
+					字段2 LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+				-->
+				)
+		</if>
+		order by a.TP_MODIFY_DATE DESC  
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			PRODUCTINFO_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	
+	
+		<select id="findVideoById" parameterType="pd" resultType="pd">
+		 select  TPI_ID from xx_product_image  WHERE tpi_product_id=#{TP_ID}  and tpi_type= '1'
+	    </select>
+	    
+	    <update id="editVideo" parameterType="pd">
+		 update
+		     xx_product_image
+		set 
+			TPI_LARGE = #{TPI_LARGE}
+		where 
+		tpi_product_id=#{TPI_PRODUCT_ID}  and tpi_type= '1'
+	   </update>
+	   
+	   	<insert id="saveVideo" parameterType="pd">
+		insert into 
+	xx_product_image
+	(
+
+	tpi_product_id,
+	TPI_THUMBNAIL,
+	TPI_MEDIUM,
+	TPI_LARGE,
+	TPI_SOURCE,
+	tpi_type
+
+	) values (
+	#{TPI_PRODUCT_ID},
+	#{TPI_THUMBNAIL},
+	#{TPI_MEDIUM},
+	#{TPI_LARGE},
+	#{TPI_SOURCE},
+	#{TPI_TYPE}
+	)
+	</insert>
+	
+	
+		<select id="listcategory" parameterType="pd" resultType="pd">
+		SELECT TPC_ID,TPC_NAME   from  xx_product_category where tpc_parent_id='0'
+	  </select>
+	  
+	  
+	  	<select id="findProductTypeById" parameterType="pd" resultType="pd">
+		 SELECT TP_PRODUCT_CATEGORY1_ID
+		 from
+		xx_product
+		where 
+			TP_ID = #{TP_ID}
+	</select>
+	  
+	  
+	  
+	  	<select id="findGroupById" parameterType="pd" resultType="pd">
+		 SELECT 
+		 TPSG_NAME,
+		 TPSG_ID
+		 from
+		xx_product_specification_group
+		where 
+			TPSG_PRODUCT_CATEGORY_ID = #{TP_PRODUCT_CATEGORY1_ID}
+	  </select>
+	  
+	  
+	  	<select id="findGroupValueById" parameterType="pd" resultType="pd">
+		 SELECT TPSV_ID,
+		 TPSV_NAME
+		 from
+		xx_product_specification_value
+		where 
+			TPSV_SPECIFICATION_GROUP_ID = #{TPSG_ID}
+	  </select>
+	  
+	  
+	  
+	  
+	  
+	  <insert id="savesgc" parameterType="java.util.Map" useGeneratedKeys="true"  keyProperty="TPSVR_RELATION_ID" keyColumn="TPSVR_RELATION_ID">
+ 
+ 
+    <selectKey keyProperty="TPSVR_RELATION_ID" order="AFTER" resultType="java.lang.Integer">
+            select LAST_INSERT_ID() as TPSVR_RELATION_ID
+        </selectKey>
+ insert into xx_product_specification_group_relation(
+    TPSGR_PRODUCTS_ID,
+    TPSGR_NAME,
+    TPSGR_TYPE
+   
+    ) 
+    values(
+    
+    #{TPSGR_PRODUCTS_ID},
+    #{TPSGR_NAME},
+    #{TPSGR_TYPE}
+  
+    )
+</insert>
+
+
+
+	<select id="findSPvalueById" parameterType="pd" resultType="pd">
+		 SELECT
+		TPSV_NAME,		
+		TPSV_IMAGE	
+		FROM  xx_product_specification_value
+		where	TPSV_ID = #{TPSV_ID}
+	</select>
+	
+
+	
+		   	<insert id="savePSR" parameterType="pd">
+		insert into 
+	xx_product_specification_value_relation
+	(
+
+	TPSVR_RELATION_ID,
+	TPSVR_NAME,
+	TPSVR_IMAGE
+
+	) values (
+	#{TPSVR_RELATION_ID},
+	#{TPSVR_NAME},
+	#{TPSVR_IMAGE}
+	)
+	</insert>
+	
+	
+	
+	
+	
+	<insert id="savespRelation" parameterType="pd">
+		insert into 
+	xx_product_specification_relation
+	(
+    TPSR_ADD_DATE,
+	TPSR_MODIFY_DATE,
+	TPSR_SORT,
+	TPSR_RELATION_ID,
+	TPSR_RELATION_NAME,
+	TPSR_MARKET_PRICE,
+	TPSR_COST,
+	TPSR_PRICE,
+	TPSR_STOCK,
+	TPSR_IS_DEFAULT,
+	TPSR_IS_ENABLE,
+	TPSR_PRODUCTS_ID
+
+	) values (
+	#{TPSR_ADD_DATE},
+	#{TPSR_MODIFY_DATE},
+	#{TPSR_SORT},
+	#{TPSR_RELATION_ID},
+	#{TPSR_RELATION_NAME},
+	#{TPSR_MARKET_PRICE},
+	#{TPSR_COST},
+	#{TPSR_PRICE},
+	#{TPSR_STOCK},
+	#{TPSR_IS_DEFAULT},
+	#{TPSR_IS_ENABLE},
+	#{TPSR_PRODUCTS_ID}
+	
+	)
+	</insert>
+	  
+	  
+	  
+	  
+	  <!-- 通过ID获取数据 -->
+	<select id="findByCategoryId"  resultType="com.fh.entity.rules.TbProductSpecificationGroup">
+	
+		 SELECT 
+		 tpsg_id as tpsgId,
+		  tpsg_name as tpsgName,		
+		  tpsg_type as tpsgType,
+		  tpsg_product_category_id	as tpsgProductCategoryId
+		   FROM   xx_product_specification_group where 
+			tpsg_product_category_id = #{0}
+	</select>
+	
+	
+	<select id="findByGroupId"  resultType="com.fh.entity.rules.TbProductSpecificationValue">
+	
+	
+		 SELECT 
+		 tpsv_id as tpsvId,
+		 tpsv_name as tpsvName,
+		 tpsv_specification_group_id as tpsvSpecificationGroupId
+		
+		   FROM   xx_product_specification_value where 
+			tpsv_specification_group_id = #{0}
+	</select>
+	
+	
+		<select id="findOne"  parameterType="pd" resultType="com.fh.entity.rules.TbProductSpecificationGroupRelation">
+	
+		 SELECT 
+		 tpsgr_id as tpsgrId,
+		 tpsgr_name as tpsgrName,
+		 tpsgr_type as tpsgrType,
+		 tpsgr_products_id as tpsgrProductsId
+		 FROM   xx_product_specification_group_relation where 
+			tpsgr_name = #{NAME} and  tpsgr_products_id=#{ID}
+	</select>
+	
+	
+		
+		<select id="findOne1"  parameterType="pd" resultType="com.fh.entity.rules.TbProductSpecificationValueRelation">
+
+	
+		 SELECT 
+		 tpsvr_id as tpsvrId,
+	     tpsvr_name as tpsvrName,
+		 tpsvr_relation_id as tpsvrRelationId
+		 FROM   xx_product_specification_value_relation where 
+			tpsvr_name = #{NAME} and  tpsvr_relation_id=#{ID}
+	</select>
+
+
+
+	  
+	  <insert id="creat" parameterType="pd" useGeneratedKeys="true"  keyProperty="TPSVR_RELATION_ID" keyColumn="TPSVR_RELATION_ID">
+ 
+ 
+    <selectKey keyProperty="TPSVR_RELATION_ID" order="AFTER" resultType="java.lang.Integer">
+            select LAST_INSERT_ID() as TPSVR_RELATION_ID
+        </selectKey>
+ insert into xx_product_specification_group_relation(
+    TPSGR_PRODUCTS_ID,
+    TPSGR_NAME,
+    TPSGR_TYPE
+   
+    ) 
+    values(
+    
+    #{TPSGR_PRODUCTS_ID},
+    #{TPSGR_NAME},
+    #{TPSGR_TYPE}
+  
+    )
+</insert>
+
+	  <insert id="creatValueRelation" parameterType="com.fh.entity.rules.TbProductSpecificationValueRelation">
+    insert into xx_product_specification_value_relation(
+    tpsvr_relation_id,
+    tpsvr_name
+    
+    ) 
+    values(
+    #{tpsvrRelationId},
+    #{tpsvrName}
+   )
+	  </insert>
+	  
+	  <delete id="deleteGroupRelation" >
+		delete from
+		xx_product_specification_group_relation
+		where 
+		tpsgr_id=#{0}
+		
+	</delete>
+	
+	  <select id="findList" resultType="com.fh.entity.rules.TbProductSpecificationGroupRelation">
+
+	  select tpsgr_id as tpsgrId from xx_product_specification_group_relation where tpsgr_products_id=#{0}
+	  
+	  </select>
+	  
+	  
+	  	  <select id="findListValueRelation" resultType="com.fh.entity.rules.TbProductSpecificationValueRelation">
+
+	  select tpsvr_id as tpsvrId, tpsvr_name  as tpsvrName from xx_product_specification_value_relation where tpsvr_relation_id=#{0}
+	  
+	  </select>
+	  
+	  <select id="findListPrd" resultType="pd">
+
+	  select
+	   tp_market_price as TP_MARKET_PRICE,
+	   tp_cost  as TP_COST,
+	   tp_price as TP_PRICE
+	   from xx_product where tp_id=#{0}
+	  
+	  </select>
+	  
+	   <insert id="creatSpecificationRelation" parameterType="com.fh.entity.rules.TbProductSpecificationRelation">
+   
+   
+    insert into xx_product_specification_relation(
+    tpsr_add_date,
+    tpsr_modify_date,
+    tpsr_sort,
+    tpsr_relation_id,
+    tpsr_relation_name,
+    tpsr_market_price,
+    tpsr_cost,
+    tpsr_price,
+    tpsr_stock,
+    tpsr_products_id,
+    tpsr_is_default,
+    tpsr_is_enable
+      ) 
+    values(
+      #{tpsrAddDate},
+     #{tpsrModifyDate},
+      #{tpsrSort},
+      #{tpsrRelationId},
+      #{tpsrRelationName},
+      #{tpsrMarketPrice},
+      #{tpsrCost},
+      #{tpsrPrice},
+      #{tpsrStock},
+      #{tpsrProductsId},
+      #{tpsrIsDefault},
+       #{tpsrIsEnable}
+       )
+	  </insert>
+	  <select id="listsp"  resultType="pd">
+		select
+		TPSR_ID as TPSR_ID
+		from 
+		xx_product_specification_relation where tpsr_products_id=#{0}
+	</select>
+	
+	
+	 <select id="listspeRelation"  resultType="com.fh.entity.rules.TbProductSpecificationRelation">
+	 
+		select
+		tpsr_id as tpsrId,
+		tpsr_sort as tpsrSort,
+		tpsr_relation_id as tpsrRelationId,
+		tpsr_relation_name as tpsrRelationName,
+		tpsr_market_price as tpsrMarketPrice,
+		tpsr_cost as tpsrCost,
+		tpsr_price as tpsrPrice,
+		tpsr_stock as tpsrStock,
+		tpsr_is_default as tpsrIsDefault,
+		tpsr_is_enable as tpsrIsEnable,
+		tpsr_products_id as tpsrProductsId
+		from 
+		xx_product_specification_relation where tpsr_products_id=#{0}
+	</select>
+	  
+    <delete id="deleteSpValueRelation">
+		delete from
+		xx_product_specification_value_relation
+		where 
+		tpsvr_id=#{0}
+		
+	</delete>
+	
+	 <delete id="deleteSpGroup">
+		delete from
+		xx_product_specification_group_relation
+		where 
+		tpsgr_id=#{0}
+		
+	</delete>
+	  
+	  
+	   <delete id="deletepdSp">
+		delete from
+		xx_product_specification_relation
+		where 
+		tpsr_id=#{0}
+		
+	</delete>
+	  
+	  
+</mapper>

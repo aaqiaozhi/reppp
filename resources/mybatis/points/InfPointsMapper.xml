@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="InfPointsMapper">
+
+	<resultMap type="InfPoints" id="infpointsResultMap">
+		<id column="TIC_ID" property="TIC_ID"/>
+		<result column="TIC_NAME" property="TIC_NAME"/>
+		<result column="TIC_PARENT_ID" property="TIC_PARENT_ID"/>
+		<result column="TIC_STATUS" property="TIC_STATUS"/>
+	</resultMap>
+	
+	<!--表名 -->
+	<sql id="tableName">
+		tb_information_cata
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+	      TIC_ID,
+		TIC_NAME,	
+		TIC_ADD_DATE,	
+		TIC_STATUS,	
+		TIC_PARENT_ID
+		
+	</sql>
+	
+		<sql id="Fields">
+	    TIC_NAME,	
+		TIC_ADD_DATE,	
+		TIC_STATUS,	
+		TIC_PARENT_ID,
+		TIC_ORDER
+		</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{TIC_NAME},	
+		#{TIC_ADD_DATE},	
+		#{TIC_STATUS},	
+		#{TIC_PARENT_ID},
+		#{TIC_ORDER}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+		(
+	<include refid="Fields"></include>
+		) values (
+	<include refid="FieldValue"></include>
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			TIC_ID = #{TIC_ID}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			TIC_NAME = #{TIC_NAME},
+			TIC_ADD_DATE=#{TIC_ADD_DATE}
+		where 
+		TIC_ID = #{TIC_ID}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 
+			TIC_ID = #{TIC_ID}
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 1=1
+		<if test="pd.TIC_ID!= null and pd.TIC_ID != ''"><!-- 检索 -->
+		and TIC_PARENT_ID = #{pd.TIC_ID}
+		</if>
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+				<!--	根据需求自己加检索条件
+					字段1 LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					 or 
+					字段2 LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+				-->
+				)
+		</if>
+	</select>
+	
+	<!-- 通过ID获取其子级列表 -->
+	<select id="listByParentId" parameterType="String" resultMap="infpointsResultMap">
+		select 
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 
+			TIC_PARENT_ID = #{parentId} order by tic_order 
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+	</select>
+	
+	
+		<!-- 通过ID获取其子级列表 -->
+	<select id="listByTimId" parameterType="String" resultType="com.fh.entity.points.InfPoints">
+		select 
+		ti_id  as TIC_ID
+		from 
+		tb_information
+		where 
+			ti_cata_id = #{timId} 
+	</select>
+	
+	
+</mapper>
